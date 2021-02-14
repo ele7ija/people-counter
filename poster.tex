@@ -1,5 +1,8 @@
 \documentclass[24pt, a0paper, portrait]{tikzposter}
+
 \usepackage[utf8]{inputenc}
+
+\usepackage{url}
 
 \title{Projekat iz predmeta Soft kompjuting - prebrojavanje ljudi}
 \author{Bojan Popržen, SW16-2017}
@@ -8,6 +11,7 @@
 
 \usepackage{blindtext}
 \usepackage{comment}
+
 
 \usetheme{Board}
 
@@ -19,21 +23,12 @@
 
 	\column{0.5}
 
-	\block{Uvod}{U ovom projektu rešavan je problem prebrojavanja ljudi u pokretu na određenoj podlozi. Ljudi se kreću po pravougaonom platou tamne boje, a kamera koja to beleži je postavljena iznad njih. Zadatak je da se prebroje ljudi koji makar jednom kroče na plato. Rešenje problema potrebno je evaluirati tako da je rešenje ono koje proizvede najmanju \textit{MAE}(eng. Mean Absolute Error) za 10 datih video klipova.
+	\block{Uvod}{U ovom projektu rešavan je problem prebrojavanja ljudi u pokretu na određenoj podlozi. Ljudi se kreću po pravougaonom platou tamne boje, a kamera koja to beleži je postavljena iznad njih. Zadatak je da se prebroje ljudi koji makar jednom kroče na plato. Rešenje problema potrebno je evaluirati tako da je rešenje ono koje proizvede najmanju \textit{MAE}(eng. Mean Absolute Error) za 10 datih video klipova dostupnih na linku: \url{https://drive.google.com/drive/folders/1nQ5P2YorlLZ8wD1BiuzosQET_1ElDOWd}.
     \vspace{0.5cm}
 
     Rešenje ovog problema ima široku primenu u praksi. Moguće primene su: alarmiranje ukoliko je broj ljudi u određenom prostoru prevelik, merenje iskorišćenosti prostora i preusmeravanje ljudi ukoliko je on previše iskorišćen ili je pak nedovoljno iskorišćen, automatsko uključivanje sistema za nadzor itd.}
 
-	\column{0.5}
-
-	\block{Moduli rešenja}{Rešenje je podeljeno u tri modula: \textbf{modul za prepoznavanje podloge po kojoj se ljudi kreću}, \textbf{modul za prebrojavanje ljudi} i \textbf{modul za praćenje broja ljudi}. Ulaz modula za prepoznavanje podloge je jedan frejm video-klipa, a izlaz je isečak frejma koji prikazuje samo podlogu. Ulaz modula za prebrojavanje ljudi je isečak frejma koji prikazuje samo podlogu po kojoj se ljudi kreću, a izlaz je broj ljudi koji se trenutno nalaze na njoj. Ulaz modula za praćenje broja ljudi je trenutan broj ljudi, a izlaz je broj ljudi koji su makar jednom kročili na podlogu. Potrebno je napomenuti da se modul za prepozavanje podloge izvršava samo na početku prvog video-klipa, jer je kamera stacionarna.}
-
-\end{columns}
-
-\begin{columns}
-
-	\column{0.5}
-	\block{Modul za prepoznavanje podloge}{Modul treba da prepozna podlogu tako što će doneti pretpostavku da je ona pravougaona. Sledi pregled transformacija koje ovaj modul izvršava nad frejmom:  
+	\block{Modul za prepoznavanje podloge}{Modul treba da prepozna podlogu tako što će doneti pretpostavku da je ona pravougaona. Sledi pregled transformacija koje ovaj modul izvršava nad frejmom i koji je cilj pojedinačnih transformacija:  
 
 	\vspace{0.15cm}
 
@@ -42,42 +37,52 @@
 	
 	\end{center}
             \begin{tikzfigure}
-                \includegraphics[width=0.15\textwidth]{assets/podloga-crno-belo.png}
+                \includegraphics[width=0.13\textwidth]{assets/podloga-crno-belo.png}
             \end{tikzfigure}
 
 	\begin{center}
-	\textbf{Adaptivni threshold} - segmentacija slike, izdvajanje bitnog
+	\textbf{Adaptivni threshold} - segmentacija slike, izdvajanje bitnog. S obzirom na to da postoji varijacija osvetljenja frejma, threshold se morao raditi adaptivno - u odnosu na okolne piksele.
 	\end{center}
             \begin{tikzfigure}
-                \includegraphics[width=0.15\textwidth]{assets/podloga-threshold.png}
+                \includegraphics[width=0.13\textwidth]{assets/podloga-threshold.png}
             \end{tikzfigure}
 
 	\begin{center}
 	\textbf{Canny detekcija ivica} - detekcija važnih lokalnih oblika
 	\end{center}
             \begin{tikzfigure}
-                \includegraphics[width=0.15\textwidth]{assets/podloga-canny.png}
+                \includegraphics[width=0.13\textwidth]{assets/podloga-canny.png}
             \end{tikzfigure}
 
 	\begin{center}
-	\textbf{Hough detekcija linija} - detekcija graničnih linija podloge
+	\textbf{Hough detekcija linija} - detekcija graničnih linija podloge. Problem je bio što kadar kamere ne hvata donju ivicu platoa već je donja ivica platoa naizgled građevinski element u neposrednoj blizini kamere. Taj element nije pravolinijski stoga donja linija nije prepoznata.
 	\end{center}
             \begin{tikzfigure}
-                \includegraphics[width=0.15\textwidth]{assets/podloga-hough.png}
+                \includegraphics[width=0.13\textwidth]{assets/podloga-hough.png}
             \end{tikzfigure}
 
 	\begin{center}
-	\textbf{Pronalazak graničnih tačaka} - koordinate na osnovu koji se slika iseca
+	\textbf{Pronalazak graničnih tačaka} - dobijanje koordinata na osnovu kojih se slika iseca. Donje granične tačke platoa određene su kao krajevi vertikalnih graničnih duži.
 	\end{center}
             \begin{tikzfigure}
-                \includegraphics[width=0.15\textwidth]{assets/podloga-granicne-tacke.png}
+                \includegraphics[width=0.13\textwidth]{assets/podloga-granicne-tacke.png}
             \end{tikzfigure}
 
 	}
-	\block{Evaluacija}{Evaluacija projekta}
+	\block{Evaluacija}{Projekat je evaluiran računanjem \textit{MAE} broja prebrojanih ljudi za 10 datih video-klipova.\textbf{Najmanja postignuta greška iznosi: 4.5}. Uočen je šablon distribucije greške: sistem loše prepoznaje osobe kada su one deo grupe gusto pozicioniranih ljudi. Dobar primer toga je poslednji video-klip (broj 10): tačan broj ljudi je 23, a sistem je prepoznao samo 9. Potencijalno unapređenje leži u tome da se natprosečno veliki segmenti prepoznatih osoba dodatno segmentišu određenim postupkom.}
 
 	\column{0.5}
-	\block{Modul za prebrojavanje ljudi}{Ovaj modul treba da prebroji ljude koji se nalaze na platou pretpostavljajući da su ljudi odeveni tako da odudaraju od same podloge. Modul izvršava sledeće transformacije nad ulaznom slikom:
+
+	\block{Moduli rešenja}{Rešenje je podeljeno u tri modula: \textbf{modul za prepoznavanje podloge po kojoj se ljudi kreću}, \textbf{modul za prebrojavanje ljudi} i \textbf{modul za praćenje broja ljudi}. Ulaz modula za prepoznavanje podloge je jedan frejm video-klipa, a izlaz je isečak frejma koji prikazuje samo podlogu. Ulaz modula za prebrojavanje ljudi je isečak frejma koji prikazuje samo podlogu po kojoj se ljudi kreću, a izlaz je broj ljudi koji se trenutno nalaze na njoj. Ulaz modula za praćenje broja ljudi je trenutan broj ljudi, a izlaz je broj ljudi koji su makar jednom kročili na podlogu. Potrebno je napomenuti da se modul za prepozavanje podloge izvršava samo na početku prvog video-klipa, jer je kamera stacionarna.
+
+
+ \begin{tikzfigure}
+                \includegraphics[width=0.45\textwidth]{assets/moduli.png}
+            \end{tikzfigure}
+}
+
+
+\block{Modul za prebrojavanje ljudi}{Ovaj modul treba da prebroji ljude koji se nalaze na platou pretpostavljajući da su ljudi odeveni tako da odudaraju od same podloge. Modul izvršava sledeće transformacije nad ulaznom slikom:
 	
 	\vspace{0.15cm}
 
@@ -86,33 +91,33 @@
 	
 	\end{center}
             \begin{tikzfigure}
-                \includegraphics[width=0.15\textwidth]{assets/ljudi-prethodni-frejm.png}
-	      \includegraphics[width=0.15\textwidth]{assets/ljudi-trenutni-frejm.png}
+                \includegraphics[width=0.12\textwidth]{assets/ljudi-prethodni-frejm.png}
+	      \includegraphics[width=0.12\textwidth]{assets/ljudi-trenutni-frejm.png}
             \end{tikzfigure}
 
 
 	\begin{center}
-	 \textbf{Razlika frejmova} - pošto se samo ljudi pomeraju
+	 \textbf{Razlika frejmova} - dobijanje promene koja se desi između dva frejma. S obzirom da je kamera stacionarna, razlika dva frejma predstavlja pomeraj ljudi na platnu. To nije skroz tačno zbog šuma signala kamere. Kako bi se šum umanjio, razlika dva frejma se bluruje.
 	
 	\end{center}
             \begin{tikzfigure}
-                \includegraphics[width=0.15\textwidth]{assets/ljudi-razlika.png}
+                \includegraphics[width=0.12\textwidth]{assets/ljudi-razlika-blur.png}
             \end{tikzfigure}
 
 	\begin{center}
-	 \textbf{Morfološko zatvaranje} - "finiranje" prostora između ljudi
+	 \textbf{Adaptivni threshold} -  segmentacija slike, izdvajanje bitnog. S obzirom na to da postoji varijacija osvetljenja frejma, threshold se morao raditi adaptivno - u odnosu na okolne piksele.
 	
 	\end{center}
             \begin{tikzfigure}
-                \includegraphics[width=0.15\textwidth]{assets/ljudi-morf-zatvaranje.png}
+                \includegraphics[width=0.12\textwidth]{assets/ljudi-threshold.png}
             \end{tikzfigure}
 
 	\begin{center}
-	 \textbf{Threshold} - segmentacija slike, izdvajanje bitnog
+	 \textbf{Dilatacija slike} - cilj postupka je da više "malih" segmenata koji pripadaju jednoj osobi grupišemo u jedan veći. Dilatacija mora biti ograničena kako se segmenti koji predstavljaju ljude ne bi grupisali.
 	
 	\end{center}
             \begin{tikzfigure}
-                \includegraphics[width=0.15\textwidth]{assets/ljudi-threshold.png}
+                \includegraphics[width=0.12\textwidth]{assets/ljudi-dilated.png}
             \end{tikzfigure}
 
 	\begin{center}
@@ -120,9 +125,18 @@
 	
 	\end{center}
             \begin{tikzfigure}
-                \includegraphics[width=0.15\textwidth]{assets/ljudi-konture.png}
+                \includegraphics[width=0.12\textwidth]{assets/ljudi-konture.png}
             \end{tikzfigure}
 }
+\end{columns}
+
+\begin{columns}
+
+	\column{0.5}
+	
+
+	\column{0.5}
+	
 
 
 \end{columns}
