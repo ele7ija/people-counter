@@ -9,6 +9,10 @@ Izvršiti prebrojavanje ljudi koji se u barem jednom trenutku nađu na platou.
 Kreirati rešenje koje će ostvariti najmanji mean absolute error (MAE).
 Za najviše 50 bodova (ocena 8) je potrebno postići MAE < 4.6.
 
+## Poster
+
+Poster se nalazi [ovde](./poster.pdf).
+
 ## Pokretanje
 Klonirati ovaj projekat. Pozicionirati se u koren projekta.
 
